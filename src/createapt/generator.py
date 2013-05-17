@@ -38,11 +38,24 @@ def extract_meta_debpkg(pkg_path):
 
 class AptArchive(object):
 
-    def __init__(self, codename, root_dir, distro, section, arch):
+    def __init__(self, root_dir, distro, section, arch, codename=None):
+        """
+
+        Arguments:
+
+            root_dir: specify root directory path of local package archive
+            distro  : Debian's distribution; unstable, testing, stable, etc.
+            section : Debian's section; main, contrib, non-free
+            arch    : Debian's architecture name; amd64, armel, i386, etc.
+            codename: Debian's release codename; sid, jessie, wheezy, etc.
+        """
         self.is_firstly = False
-        self.codename = codename
         self.root_dir = root_dir
         self.distro = distro
+        if codename:
+            self.codename = codename
+        else:
+            self.codename = distro
         self.section = section
         self.arch = arch
         self.pool_dir = os.path.join(root_dir, "pool")
@@ -53,10 +66,11 @@ class AptArchive(object):
         self.release_file = os.path.join(os.path.dirname(self.meta_dir),
                                          'Release')
         self.cache = apt.Cache()
-        if self.cache['dpkg-dev']:
+        if not self.cache['dpkg-dev']:
             raise OSError('Not installed "dpkg-dev" package')
 
     def makedir_archive(self):
+        """Make directories under root directory of package archive."""
         if not os.path.isdir(self.root_dir):
             raise IOError('No such directory "%s"' % self.root_dir)
 
@@ -70,6 +84,7 @@ class AptArchive(object):
             self.is_firstly = True
 
     def generate_packages_list(self):
+        """Generate parameters of override file."""
         pkg_name_list = [extract_meta_debpkg(pkg)
                          for pkg in glob.glob(os.path.join(self.pool_dir,
                                                            '*.deb'))]
@@ -77,6 +92,7 @@ class AptArchive(object):
         return list(set(pkg_name_list))
 
     def generate_override_file(self):
+        """Generate override file."""
         packages_list_s = ''
         for l in self.generate_packages_list():
             packages_list_s += "%s %s %s\n" % l
@@ -86,6 +102,10 @@ class AptArchive(object):
         return True
 
     def generate_packages_file(self):
+        """Generate Packages file with dpkg-scanpackages command."""
+        if not os.path.isfile('/usr/bin/dpkg-scanpackages'):
+            raise IOError('No such file "/usr/bin/dpkg-scanpackages"')
+
         stdout = subprocess.check_output(['dpkg-scanpackages',
                                           self.pool_dir,
                                           self.override_file_path,
@@ -95,6 +115,7 @@ class AptArchive(object):
         return True
 
     def generate_release_file(self):
+        """Generate Release file."""
         release_file = os.path.join(os.path.dirname(self.meta_dir), 'Release')
         content = ('Archive: %s\n'
                    'Codename: %s\n'
@@ -108,6 +129,7 @@ class AptArchive(object):
         return True
 
     def echo_aptline(self):
+        """Return notification message of apt-line."""
         apt_line = 'You should APT-Line as following;\n'
         apt_line += '[for localhost]\n'
         apt_line += 'deb file:%s %s %s\n\n' % (self.root_dir,
@@ -121,8 +143,9 @@ class AptArchive(object):
         return apt_line
 
     def runner(self):
+        """running methods of generating archive."""
         self.makedir_archive()
-        if self.firstly:
+        if self.is_firstly:
             return (False, 'You should binary package files in "%s"'
                     % self.pool_dir)
         else:

@@ -15,3 +15,97 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
+import argparse
+import generator
+import utils
+from __init__ import __version__
+
+
+def parse_options():
+    parser = argparse.ArgumentParser(description='usage')
+    setoption(parser, 'version')
+    setoption(parser, 'rootdir')
+    setoption(parser, 'codename')
+    setoption(parser, 'distro')
+    setoption(parser, 'section')
+    setoption(parser, 'arch')
+    setoption(parser, 'commands')
+    args = parser.parse_args()
+    return args
+
+
+def setoption(parser, keyword):
+    """
+
+    Arguments:
+
+        parser:  object of argparse
+        keyword: switching keyword
+    """
+    if keyword == 'version':
+        parser.add_argument('-V', '--version', action='version',
+                            version=__version__)
+    elif keyword == 'rootdir':
+        parser.add_argument('-r', '--rootdir', action='store',
+                            required=True,
+                            help=('specify your root directory path of '
+                                  'local package archive'))
+    elif keyword == 'distro':
+        parser.add_argument('-d', '--distro', action='store',
+                            required=True,
+                            help=('Debian is '
+                                  'unstable, testing, stable, oldstable. '
+                                  'Ubuntu is '
+                                  'saucy, raring, quantal, precise, etc.'))
+    elif keyword == 'codename':
+        parser.add_argument('-c', '--codename', action='store',
+                            help=('Debian is '
+                                  'sid, jessie, wheezy, squeeze, etc. '
+                                  'Ubuntu is same as distro'))
+    elif keyword == 'section':
+        parser.add_argument('-s', '--section', action='store',
+                            required=True,
+                            help=('specify some unique name. '
+                                  'Debian is main, contrib, non-free. '
+                                  'Ubuntu is '
+                                  'main, restricted, multiverse, universe'))
+    elif keyword == 'arch':
+        parser.add_argument('-a', '--arch', action='store',
+                            required=True,
+                            help=('specified architechture name. '
+                                  'amd64, armel, armhf, i386, etc.'))
+    elif keyword == 'commands':
+        parser.set_defaults(func=generate_archive)
+
+
+def generate_archive(args):
+    """
+
+    Argument:
+
+        args: argument object
+    """
+    if args.codename:
+        codename = args.codename
+    else:
+        codename = None
+    try:
+        apt_gen = generator.AptArchive(args.rootdir, args.distro,
+                                       args.section, args.arch, codename)
+        rc, msg = apt_gen.runner()
+        if rc:
+            priority = 6
+        else:
+            priority = 5
+            utils.logging(priority, msg)
+    except (IOError, OSError) as error:
+        utils.logging(3, error)
+
+
+def main():
+    args = parse_options()
+    args.func(args)
+
+
+if __name__ == '__main__':
+    main()

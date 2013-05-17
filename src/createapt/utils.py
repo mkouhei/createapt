@@ -31,6 +31,9 @@ def logging(priority, message):
     syslog.syslog(priority, str(message))
     syslog.closelog()
     print(message)
-    # 0: EMERG, 1: ALERT, 2: CRIT, 3: ERR
     if priority in range(4):
+        # 0: EMERG, 1: ALERT, 2: CRIT, 3: ERR
         exit(1)
+    else:
+        # 4: WARNING, 5: NOTICE, 6: INFO, 7: DEBUG
+        return True
