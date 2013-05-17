@@ -15,5 +15,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-__version__ = '0.1'
-__NAME__ = 'createapt'
+import syslog
+from __init__ import __NAME__
+
+
+def logging(priority, message):
+    """
+
+    Arguments:
+
+        priority: syslog priority
+        message:  log message
+    """
+    syslog.openlog(__NAME__, syslog.LOG_PID, syslog.LOG_LOCAL0)
+    syslog.syslog(priority, str(message))
+    syslog.closelog()
+    print(message)
+    # 0: EMERG, 1: ALERT, 2: CRIT, 3: ERR
+    if priority in range(4):
+        exit(1)
