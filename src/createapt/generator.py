@@ -17,32 +17,8 @@
 """
 import os.path
 import glob
-import apt_inst
-import apt_pkg
-import apt
 import subprocess
 import utils
-
-
-def extract_meta_debpkg(pkg_path):
-    """Extract tag section from control file
-
-    Argument:
-
-        pkg_path: debian package file path
-
-    Return:
-
-        tag section of "control"; Package, Priority, Section
-    """
-    # extract string of "control" from ".deb" file
-    control_s = apt_inst.DebFile(pkg_path).control.extractdata('control')
-
-    # convert string of "control" to Tag Object
-    tag_section = apt_pkg.TagSection(control_s)
-
-    return (tag_section.get('Package'), tag_section.get('Priority'),
-            tag_section.get('Section'))
 
 
 class AptArchive(object):
@@ -74,9 +50,7 @@ class AptArchive(object):
         self.packages_file = os.path.join(self.meta_dir, 'Packages')
         self.release_file = os.path.join(os.path.dirname(self.meta_dir),
                                          'Release')
-        self.cache = apt.Cache()
-        if not self.cache['dpkg-dev']:
-            raise OSError('Not installed "dpkg-dev" package')
+        utils.check_dependency_packages('dpkg-dev')
 
     def makedir_archive(self):
         """
@@ -96,7 +70,7 @@ class AptArchive(object):
             os.makedirs(self.meta_dir, 0755)
             self.is_firstly = True
 
-        return True
+        return
 
     def generate_override(self):
         """
@@ -106,7 +80,8 @@ class AptArchive(object):
         """
         debpkg_files = glob.glob(os.path.join(self.pool_dir, '*.deb'))
 
-        pkg_name_list = [extract_meta_debpkg(pkg) for pkg in debpkg_files]
+        pkg_name_list = [utils.extract_meta_debpkg(pkg)
+                         for pkg in debpkg_files]
 
         # remove duplicate with list(set(list))
         pkg_name_list_without_duplicate = list(set(pkg_name_list))
@@ -163,7 +138,7 @@ class AptArchive(object):
         """Running methods of generating archive."""
         self.makedir_archive()
         if self.is_firstly:
-            return (False, ('You should binary package files in "%s", \n'
+            return (False, ('Install binary package files to "%s",\n'
                             'and re-run same command.' % self.pool_dir))
         else:
             utils.save(self.override_file, self.generate_override())

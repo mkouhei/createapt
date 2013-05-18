@@ -16,6 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 import syslog
+import apt
+import apt_inst
+import apt_pkg
 from __init__ import __NAME__
 
 
@@ -49,3 +52,31 @@ def save(filepath, content):
     """
     with open(filepath, 'w') as f:
         f.write(content)
+
+
+def check_dependency_packages(*args):
+    cache = apt.Cache()
+    for pkg in args:
+        if not cache[pkg]:
+            raise OSError('Not installed "%s" package' % pkg)
+
+
+def extract_meta_debpkg(pkg_path):
+    """Extract tag section from control file
+
+    Argument:
+
+        pkg_path: debian package file path
+
+    Return:
+
+        tag section of "control"; Package, Priority, Section
+    """
+    # extract string of "control" from ".deb" file
+    control_s = apt_inst.DebFile(pkg_path).control.extractdata('control')
+
+    # convert string of "control" to Tag Object
+    tag_section = apt_pkg.TagSection(control_s)
+
+    return (tag_section.get('Package'), tag_section.get('Priority'),
+            tag_section.get('Section'))

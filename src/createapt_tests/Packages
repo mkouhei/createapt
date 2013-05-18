@@ -1,0 +1,42 @@
+Package: python-backup2swift
+Source: backup2swift
+Version: 0.3-1
+Architecture: all
+Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
+Installed-Size: 98
+Depends: python (>= 2.7), python (<< 2.8), python-pkg-resources, python-swiftsc, python-argparse
+Provides: python2.7-backup2swift
+Filename: /tmp/createapt/tmp/createapt/pool/python-backup2swift_0.3-1_all.deb
+Size: 10090
+MD5sum: 4f43e0614fff786882df4612f530075b
+SHA1: 54f6e83b255bfec59f98c407f1b97ffec48b5279
+SHA256: e19dda827f2173565510dd90d4e319fa747e0a4b670dda1d100cf5e6cb9baaab
+Section: python
+Priority: optional
+Homepage: https://github.com/mkouhei/backup2swift
+Description: backup data to OpenStack Swift
+ This tool is that backup data to OpenStack Swift. provides features are
+ command line interface, and backup rotatition. This is depend on swiftsc,
+ that is simple client library of OpenStack Swift.
+
+Package: python-swiftsc
+Source: swiftsc
+Version: 0.2.1-1
+Architecture: all
+Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
+Installed-Size: 74
+Depends: python (>= 2.7), python (<< 2.8), python-pkg-resources, python-requests, python-magic
+Provides: python2.7-swiftsc
+Filename: /tmp/createapt/tmp/createapt/pool/python-swiftsc_0.2.1-1_all.deb
+Size: 6292
+MD5sum: b69c90f982bed9de63cfd94fc38ceae7
+SHA1: d73db1d31a511df8f3ebc347e32d8fc445efcfe8
+SHA256: 703ffb3417d7ad659c72a4eacee3d19975ad80ffc13ae189b79962fc8860452f
+Section: python
+Priority: optional
+Homepage: https://github.com/mkouhei/swiftsc
+Description: simple client library of OpenStack Swift
+ This tool is simple client library of OpenStack Swift.
+ This tool is intended to be used in the module and Python script other.
+ The main purpose of this tool is used as a core module for backup tool.
+
