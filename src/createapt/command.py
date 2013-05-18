@@ -97,9 +97,11 @@ def generate_archive(args):
             priority = 6
         else:
             priority = 5
-            utils.logging(priority, msg)
     except (IOError, OSError) as error:
-        utils.logging(3, error)
+        priority = 3
+        msg = error
+    finally:
+        utils.logging(priority, msg)
 
 
 def main():

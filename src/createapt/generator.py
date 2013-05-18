@@ -29,9 +29,17 @@ def extract_meta_debpkg(pkg_path):
     Argument:
 
         pkg_path: debian package file path
+
+    Return:
+
+        tag section of "control"; Package, Priority, Section
     """
+    # extract string of "control" from ".deb" file
     control_s = apt_inst.DebFile(pkg_path).control.extractdata('control')
+
+    # convert string of "control" to Tag Object
     tag_section = apt_pkg.TagSection(control_s)
+
     return (tag_section.get('Package'), tag_section.get('Priority'),
             tag_section.get('Section'))
 
@@ -70,48 +78,66 @@ class AptArchive(object):
             raise OSError('Not installed "dpkg-dev" package')
 
     def makedir_archive(self):
-        """Make directories under root directory of package archive."""
+        """
+        Make directories under root directory of package archive.
+        This method is executed once only.
+        """
         if not os.path.isdir(self.root_dir):
             raise IOError('No such directory "%s"' % self.root_dir)
 
-        # put package files
+        # make directory for putting package files
         if not os.path.isdir(self.pool_dir):
             os.makedirs(self.pool_dir, 0755)
             self.is_firstly = True
-        # put meta files
+
+        # make dierctory for putting meta files
         if not os.path.isdir(self.meta_dir):
             os.makedirs(self.meta_dir, 0755)
             self.is_firstly = True
 
+        return True
+
     def generate_packages_list(self):
-        """Generate parameters of override file."""
-        pkg_name_list = [extract_meta_debpkg(pkg)
-                         for pkg in glob.glob(os.path.join(self.pool_dir,
-                                                           '*.deb'))]
-        # remove duplicate
+        """
+        Generate parameters of "override" file.
+        Parameters of "override" file are follows;
+        <packagename> <priority> <section>
+        """
+        debpkg_files = glob.glob(os.path.join(self.pool_dir, '*.deb'))
+
+        pkg_name_list = [extract_meta_debpkg(pkg) for pkg in debpkg_files]
+
+        # remove duplicate with list(set(list))
         return list(set(pkg_name_list))
 
     def generate_override_file(self):
-        """Generate override file."""
+        """Generate "override" file."""
         packages_list_s = ''
-        for l in self.generate_packages_list():
-            packages_list_s += "%s %s %s\n" % l
-            self.override_file_path = os.path.join(self.root_dir, 'override')
-        with open(self.override_file_path, 'w') as f:
+        for line in self.generate_packages_list():
+            packages_list_s += "%s %s %s\n" % line
+
+        with open(self.override_file, 'w') as f:
             f.write(packages_list_s)
+
         return True
 
     def generate_packages_file(self):
-        """Generate Packages file with dpkg-scanpackages command."""
+        """
+        Generate "Packages" file with dpkg-scanpackages command.
+        Need to prepare install "*.deb" files to "pool" directory.
+        """
         if not os.path.isfile('/usr/bin/dpkg-scanpackages'):
             raise IOError('No such file "/usr/bin/dpkg-scanpackages"')
 
+        # execute "dpkg-scanpackages" command.
         stdout = subprocess.check_output(['dpkg-scanpackages',
                                           self.pool_dir,
-                                          self.override_file_path,
+                                          self.override_file,
                                           self.root_dir])
+
         with open(self.packages_file, 'w') as f:
             f.write(stdout)
+
         return True
 
     def generate_release_file(self):
@@ -130,24 +156,26 @@ class AptArchive(object):
 
     def echo_aptline(self):
         """Return notification message of apt-line."""
-        apt_line = 'You should APT-Line as following;\n'
-        apt_line += '[for localhost]\n'
-        apt_line += 'deb file:%s %s %s\n\n' % (self.root_dir,
-                                               self.distro,
-                                               self.section)
-        apt_line += '[for remotehost]\n'
-        apt_line += 'deb http://localhost/pubdir/ %s %s\n' % (self.distro,
-                                                              self.section)
-        apt_line += ('Note: You should setup public directory "%s"'
-                     'as "/pubdir/"\n') % self.root_dir
+        apt_line = ('You should APT-Line as following;\n'
+                    '[for localhost]\n'
+                    'deb file:%s %s %s\n\n'
+                    '[for remotehost]\n'
+                    'deb http://localhost/pubdir/ %s %s\n'
+                    'Note: You should setup public directory "%s"'
+                    'as "/pubdir/"\n' % (self.root_dir,
+                                         self.distro,
+                                         self.section,
+                                         self.distro,
+                                         self.section,
+                                         self.root_dir))
         return apt_line
 
     def runner(self):
-        """running methods of generating archive."""
+        """Running methods of generating archive."""
         self.makedir_archive()
         if self.is_firstly:
-            return (False, 'You should binary package files in "%s"'
-                    % self.pool_dir)
+            return (False, ('You should binary package files in "%s", \n'
+                            'and re-run same command.' % self.pool_dir))
         else:
             self.generate_override_file()
             self.generate_packages_file()
