@@ -1,0 +1,81 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH CREATEAPT 1 "May 19, 2013"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+createapt \- generating private packages archive
+.SH SYNOPSIS
+.B createapt
+.RI [ options ] " (file|directory)"
+.br
+.SH DESCRIPTION
+This manual page documents briefly the
+.B createapt
+commands.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics,
+.\" respectively.
+\fBcreateapt\fP is generating the metadata necessary for private package APT archive. This is a tool similar to createrepo command to yum / rpm.
+
+.SH OPTIONS
+These programs follow the usual GNU command line syntax, with long
+options starting with two dashes (`-').
+A summary of options is included below.
+For a complete description, see the Info files.
+.TP
+.B \-h, \-\-help
+Show summary of options.
+.TP
+.B \-V, \-\-version
+Show program's version number.
+.TP
+.B \-r ROOTDIR, \-\-rootdir ROOTDIR
+Specify root directory path of private package archive
+.TP
+.B \-d DISTRO, \-\-distro DISTRO
+Specify Debian distribution name.
+Debian is unstable, testing, stable, oldstable.
+Ubuntu is saucy, raring, quantal, precise, etc.
+.TP
+.B \-s SECTION, \-\-section SECTION
+Specify some unique name.
+Debian is main, contrib, non-free.
+Ubuntu is main, restricted, multiverse, universe.
+.TP
+.B \-a ARCH, \-\-arch ARCH
+Specified architechture name.
+for example; amd64, armel, armhf, i386, ... etc.
+.TP
+.B \-c CODENAME, \-\-codename CODENAME
+Specify codename of distribution.
+Debian is sid, jessie, wheezy, squeeze, etc.
+Ubuntu is same as distro.
+.TP
+.B \-d DELETE, \-\-delete DELETE
+Delete backup data
+.TP
+.B \-v, \-\-verbose
+list verbose
+.TP
+.SH SEE ALSO
+.br
+The programs are documented by
+.IR "README.rst".
+.SH AUTHOR
+createapt was written by Kouhei Maeda <mkouhei@palmtb.net>.
+.PP
+This manual page was written by Kouhei Maeda <mkouhei@palmtb.net>.

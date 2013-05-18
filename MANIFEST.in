@@ -1,4 +1,4 @@
 include MANIFEST.in
 include LICENSE
-recursive-include docs *.rst
-recursive-include src *.py
+recursive-include docs *.rst *.1
+recursive-include src *.py *.deb Packages

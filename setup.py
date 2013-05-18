@@ -29,6 +29,7 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Programming Language :: Python",
     "Topic :: System :: Systems Administration",
+    "Topic :: System :: Archiving :: Packaging",
 ]
 
 long_description = \
@@ -36,7 +37,7 @@ long_description = \
         open(os.path.join("docs","TODO.rst")).read() + \
         open(os.path.join("docs","HISTORY.rst")).read()
 
-requires = ['setuptools']
+requires = ['setuptools', 'python-apt']
 
 setup(name='createapt',
       version=createapt.__version__,
@@ -54,9 +55,8 @@ setup(name='createapt',
         test=[
             'pytest',
             'pep8',
-            'mock',
             ],
         ),
       test_suite='tests',
-      tests_require=['pytest','pep8', 'mock'],
+      tests_require=['pytest','pep8'],
 )
