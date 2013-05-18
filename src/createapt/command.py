@@ -100,8 +100,7 @@ def generate_archive(args):
     except (IOError, OSError) as error:
         priority = 3
         msg = error
-    finally:
-        utils.logging(priority, msg)
+    utils.logging(priority, msg)
 
 
 def main():

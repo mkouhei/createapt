@@ -37,3 +37,15 @@ def logging(priority, message):
     else:
         # 4: WARNING, 5: NOTICE, 6: INFO, 7: DEBUG
         return True
+
+
+def save(filepath, content):
+    """Generate file
+
+    Arguments:
+
+        filepath: write file path
+        content : string of content
+    """
+    with open(filepath, 'w') as f:
+        f.write(content)

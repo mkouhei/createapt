@@ -21,6 +21,7 @@ import apt_inst
 import apt_pkg
 import apt
 import subprocess
+import utils
 
 
 def extract_meta_debpkg(pkg_path):
@@ -97,7 +98,7 @@ class AptArchive(object):
 
         return True
 
-    def generate_packages_list(self):
+    def generate_override(self):
         """
         Generate parameters of "override" file.
         Parameters of "override" file are follows;
@@ -108,53 +109,41 @@ class AptArchive(object):
         pkg_name_list = [extract_meta_debpkg(pkg) for pkg in debpkg_files]
 
         # remove duplicate with list(set(list))
-        return list(set(pkg_name_list))
+        pkg_name_list_without_duplicate = list(set(pkg_name_list))
 
-    def generate_override_file(self):
-        """Generate "override" file."""
         packages_list_s = ''
-        for line in self.generate_packages_list():
+        for line in pkg_name_list_without_duplicate:
             packages_list_s += "%s %s %s\n" % line
 
-        with open(self.override_file, 'w') as f:
-            f.write(packages_list_s)
+        return packages_list_s
 
-        return True
-
-    def generate_packages_file(self):
+    def generate_packages(self):
         """
-        Generate "Packages" file with dpkg-scanpackages command.
+        Generate content of "Packages" file with dpkg-scanpackages command.
         Need to prepare install "*.deb" files to "pool" directory.
         """
         if not os.path.isfile('/usr/bin/dpkg-scanpackages'):
             raise IOError('No such file "/usr/bin/dpkg-scanpackages"')
 
         # execute "dpkg-scanpackages" command.
-        stdout = subprocess.check_output(['dpkg-scanpackages',
-                                          self.pool_dir,
-                                          self.override_file,
-                                          self.root_dir])
+        packages_s = subprocess.check_output(['dpkg-scanpackages',
+                                              self.pool_dir,
+                                              self.override_file,
+                                              self.root_dir])
+        return packages_s
 
-        with open(self.packages_file, 'w') as f:
-            f.write(stdout)
+    def generate_release(self):
+        """Generate content of Release file."""
+        release_s = ('Archive: %s\n'
+                     'Codename: %s\n'
+                     'Components: %s\n'
+                     'Origin: Local\n'
+                     'Label: Local\n'
+                     'Architectures: %s\n') % (self.distro, self.codename,
+                                               self.section, self.arch)
+        return release_s
 
-        return True
-
-    def generate_release_file(self):
-        """Generate Release file."""
-        release_file = os.path.join(os.path.dirname(self.meta_dir), 'Release')
-        content = ('Archive: %s\n'
-                   'Codename: %s\n'
-                   'Components: %s\n'
-                   'Origin: Local\n'
-                   'Label: Local\n'
-                   'Architectures: %s\n') % (self.distro, self.codename,
-                                             self.section, self.arch)
-        with open(release_file, 'w') as f:
-            f.write(content)
-        return True
-
-    def echo_aptline(self):
+    def generate_aptline(self):
         """Return notification message of apt-line."""
         apt_line = ('You should APT-Line as following;\n'
                     '[for localhost]\n'
@@ -177,7 +166,7 @@ class AptArchive(object):
             return (False, ('You should binary package files in "%s", \n'
                             'and re-run same command.' % self.pool_dir))
         else:
-            self.generate_override_file()
-            self.generate_packages_file()
-            self.generate_release_file()
-            return (True, self.echo_aptline())
+            utils.save(self.override_file, self.generate_override())
+            utils.save(self.packages_file, self.generate_packages())
+            utils.save(self.release_file, self.generate_release())
+            return (True, self.generate_aptline())
