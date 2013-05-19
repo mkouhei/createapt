@@ -20,6 +20,7 @@ Requirements
 * Debian system or Debian-derived system
 * Python 2.7
 * python-apt
+* dpkg-dev
 
 Setup
 -----
@@ -27,7 +28,7 @@ Setup
 This depends on python-apt.
 So firstly you must install "python-apt".::
 
-  $ sudo apt-get install python-apt
+  $ sudo apt-get install python-apt dpkg-dev
 
 Then you install this software.::
 
@@ -54,9 +55,9 @@ Firstly copy pre-commit hook script.::
 Debian systems
 ^^^^^^^^^^^^^^
 
-Next install python 2.7 later, and python-apt, py.test, pep8. Debian GNU/Linux Sid system as follows,::
+Next install python 2.7 later, and python-apt, dpkg-dev, py.test, pep8. Debian GNU/Linux Sid system as follows,::
 
-  $ sudo apt-geet install python python-apt python-pytest pep8
+  $ sudo apt-geet install python python-apt dpkg-dev python-pytest pep8
 
 Then checkout "devel" branch for development, commit your changes. Before pull request, execute git rebase.
 
