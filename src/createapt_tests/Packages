@@ -6,7 +6,7 @@ Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
 Installed-Size: 98
 Depends: python (>= 2.7), python (<< 2.8), python-pkg-resources, python-swiftsc, python-argparse
 Provides: python2.7-backup2swift
-Filename: /tmp/createapt/tmp/createapt/pool/python-backup2swift_0.3-1_all.deb
+Filename: pool/python-backup2swift_0.3-1_all.deb
 Size: 10090
 MD5sum: 4f43e0614fff786882df4612f530075b
 SHA1: 54f6e83b255bfec59f98c407f1b97ffec48b5279
@@ -27,7 +27,7 @@ Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
 Installed-Size: 74
 Depends: python (>= 2.7), python (<< 2.8), python-pkg-resources, python-requests, python-magic
 Provides: python2.7-swiftsc
-Filename: /tmp/createapt/tmp/createapt/pool/python-swiftsc_0.2.1-1_all.deb
+Filename: pool/python-swiftsc_0.2.1-1_all.deb
 Size: 6292
 MD5sum: b69c90f982bed9de63cfd94fc38ceae7
 SHA1: d73db1d31a511df8f3ebc347e32d8fc445efcfe8

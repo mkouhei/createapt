@@ -1,2 +1,2 @@
 pep8==1.4
-mock==0.8.0
+python-apt

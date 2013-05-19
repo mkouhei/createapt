@@ -100,11 +100,15 @@ class AptArchive(object):
         if not os.path.isfile('/usr/bin/dpkg-scanpackages'):
             raise IOError('No such file "/usr/bin/dpkg-scanpackages"')
 
+        # change directory
+        curdir = os.path.abspath(os.path.curdir)
+        os.chdir(self.root_dir)
+
         # execute "dpkg-scanpackages" command.
         packages_s = subprocess.check_output(['dpkg-scanpackages',
-                                              self.pool_dir,
-                                              self.override_file,
-                                              self.root_dir])
+                                              'pool',
+                                              self.override_file])
+        os.chdir(curdir)
         return packages_s
 
     def generate_release(self):
