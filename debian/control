@@ -1,0 +1,19 @@
+Source: createapt
+Section: python
+Priority: optional
+Maintainer: Kouhei Maeda <mkouhei@palmtb.net>
+Build-Depends: debhelper (>= 8.0.0), python-all (>= 2.6), python-setuptools, python-pytest, pep8, python-apt
+Standards-Version: 3.9.4
+X-Python-Version: >= 2.6
+Homepage: https://github.com/mkouhei/createapt
+
+Package: python-createapt
+Architecture: all
+Provides: ${python:Provides}
+Depends: ${python:Depends}, ${misc:Depends}, python-apt, dpkg-dev
+Description: generating private packages archive
+ This tools is generating the metadata necessary for private package APT
+ archive. This is a tool similar to createrepo command to yum / rpm.
+ It is a wrapper for "dpkg-scanpackages" command in practice. Specify the
+ parameters required by the option, user can automatically create a local
+ package archive.

@@ -1,0 +1,21 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+%:
+	dh $@ --with python2
+
+override_dh_auto_test:
+	set -e; \
+	for py in $(shell pyversions -vr); do \
+		py.test-$$py -v $(CURDIR)/_build/lib.$(shell python -c 'import distutils.util as d; print d.get_platform()')-$$py; \
+	done
+
+override_dh_install:
+	dh_install
+	find $(CURDIR)/debian/python-createapt -name "*pyc" -delete
+	find $(CURDIR)/debian/python-createapt -type d -a -empty -delete
+	rm -rf $(CURDIR)/debian/python-createapt/usr/share/pyshared/createapt_tests
+	rm -rf $(CURDIR)/debian/python-createapt/usr/lib/python2.6/dist-packages/createapt_tests
+	rm -rf $(CURDIR)/debian/python-createapt/usr/lib/python2.7/dist-packages/createapt_tests
