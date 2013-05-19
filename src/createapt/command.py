@@ -72,7 +72,7 @@ def setoption(parser, keyword):
     elif keyword == 'arch':
         parser.add_argument('-a', '--arch', action='store',
                             required=True,
-                            help=('specified architechture name. '
+                            help=('specified architecture name. '
                                   'amd64, armel, armhf, i386, etc.'))
     elif keyword == 'commands':
         parser.set_defaults(func=generate_archive)
