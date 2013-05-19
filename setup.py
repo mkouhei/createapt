@@ -59,4 +59,9 @@ setup(name='createapt',
         ),
       test_suite='tests',
       tests_require=['pytest','pep8'],
+      entry_points={
+        "console_scripts": [
+            "createapt = createapt.command:main",
+            ]
+        },
 )
