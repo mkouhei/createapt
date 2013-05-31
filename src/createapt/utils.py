@@ -56,9 +56,12 @@ def save(filepath, content):
 
 def check_dependency_packages(*args):
     cache = apt.Cache()
-    for pkg in args:
-        if not cache[pkg]:
-            raise OSError('Not installed "%s" package' % pkg)
+    try:
+        for pkg in args:
+            if not cache[pkg].is_installed:
+                raise OSError('Not installed "%s" package' % pkg)
+    except KeyError:
+        raise OSError('Not installed "%s" package' % pkg)
 
 
 def extract_meta_debpkg(pkg_path):

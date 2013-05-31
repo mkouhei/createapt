@@ -38,9 +38,12 @@ class UtilsTests(unittest.TestCase):
             self.assertEqual(f.read(), 'dummy')
         os.remove(v.dummy_file)
 
-    @unittest.expectedFailure
     def test_check_dependency_packages(self):
-        u.check_dependency_packages('dummy')
+        self.assertRaises(OSError, u.check_dependency_packages, 'dummy')
+
+    def test_check_dependency_packages_not_installed(self):
+        self.assertRaises(OSError, u.check_dependency_packages,
+                          'installation-guide-s390x')
 
     def test_extract_meta_debpkg(self):
         self.assertTupleEqual(('python-swiftsc', 'optional', 'python'),
